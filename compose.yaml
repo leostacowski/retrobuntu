@@ -1,0 +1,28 @@
+# docker compose up -d
+# docker container exec -it retrobuntu bash
+
+services:
+  retrobuntu:
+    container_name: retrobuntu
+    restart: on-failure
+    command: ['sleep', 'infinity']
+    image: ubuntu
+    gpus: all
+    expose:
+      - '22'
+    ports:
+      - '22:22'
+    volumes:
+      - ubuntu-data:/shared
+    post_start:
+      - command: apt-get -y update
+      - command: apt-get -y install openssh-server
+      - command: apt-get -y upgrade
+      - command: service ssh start
+      - command: sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
+      - command: useradd -m -s /bin/bash leostacowski
+      - command: echo "leostacowski:root" | chpasswd
+      - command: service ssh restart
+        user: root
+volumes:
+  ubuntu-data: {}
