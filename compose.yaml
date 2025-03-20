@@ -1,28 +1,55 @@
-# docker compose up -d
-# docker container exec -it retrobuntu bash
+# docker compose up --build -d
+# docker container exec -it retrobuntu_container bash
+
+name: retrobuntu
 
 services:
   retrobuntu:
-    container_name: retrobuntu
+    container_name: retrobuntu_container
     restart: on-failure
-    command: ['sleep', 'infinity']
-    image: ubuntu
-    gpus: all
-    expose:
-      - '22'
-    ports:
-      - '22:22'
+    environment:
+      - SSH_USER=retrobuntu
+      - SSH_PASS=retrobuntu
     volumes:
-      - ubuntu-data:/shared
-    post_start:
-      - command: apt-get -y update
-      - command: apt-get -y install openssh-server
-      - command: apt-get -y upgrade
-      - command: service ssh start
-      - command: sed -i 's/PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
-      - command: useradd -m -s /bin/bash leostacowski
-      - command: echo "leostacowski:root" | chpasswd
-      - command: service ssh restart
-        user: root
+      - volume:/var/cache/apt
+      - volume:/var/lib/apt
+      - volume:/home
+    build:
+      context: .
+      dockerfile_inline: |
+        FROM ubuntu
+
+        # https://docs.docker.com/reference/dockerfile/#example-cache-apt-packages
+        RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
+        RUN --mount=type=cache,target=/var/cache/apt,sharing=locked
+        RUN --mount=type=cache,target=/var/lib/apt,sharing=locked
+
+        # https://github.com/ilikenwf/apt-fast?tab=readme-ov-file#installation
+        RUN apt-get update -y
+        RUN DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common
+        RUN DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:apt-fast/stable
+        RUN DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:libretro/stable
+        RUN DEBIAN_FRONTEND=noninteractive apt-get update -y
+
+        RUN DEBIAN_FRONTEND=noninteractive apt-get install -y apt-fast
+        RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y slim
+        RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y xubuntu-desktop
+        RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y xrdp
+        RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y gamemode
+        RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y retroarch
+        RUN DEBIAN_FRONTEND=noninteractive apt-fast full-upgrade -y
+
+        # https://medium.com/cloud-for-all/running-ubuntu-os-with-gui-in-a-docker-container-rdp-dbecb0880893
+        RUN adduser xrdp ssl-cert
+        RUN service xrdp restart
+
+        USER root
+        EXPOSE 3389
+
+        ADD scripts/start.sh /start.sh
+
+        ENTRYPOINT ["bash", "/start.sh"]
+    ports:
+      - '9300:3389'
 volumes:
-  ubuntu-data: {}
+  volume: {}
