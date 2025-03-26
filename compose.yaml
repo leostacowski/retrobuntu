@@ -1,55 +1,20 @@
-# docker compose up --build -d
-# docker container exec -it retrobuntu_container bash
-
-name: retrobuntu
+name: adguardhome
 
 services:
-  retrobuntu:
-    container_name: retrobuntu_container
-    restart: on-failure
-    environment:
-      - SSH_USER=retrobuntu
-      - SSH_PASS=retrobuntu
-    volumes:
-      - volume:/var/cache/apt
-      - volume:/var/lib/apt
-      - volume:/home
+  adguardhome:
+    container_name: adguardhome
+    restart: on-failure:5
     build:
       context: .
-      dockerfile_inline: |
-        FROM ubuntu
-
-        # https://docs.docker.com/reference/dockerfile/#example-cache-apt-packages
-        RUN rm -f /etc/apt/apt.conf.d/docker-clean; echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache
-        RUN --mount=type=cache,target=/var/cache/apt,sharing=locked
-        RUN --mount=type=cache,target=/var/lib/apt,sharing=locked
-
-        # https://github.com/ilikenwf/apt-fast?tab=readme-ov-file#installation
-        RUN apt-get update -y
-        RUN DEBIAN_FRONTEND=noninteractive apt-get install -y software-properties-common
-        RUN DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:apt-fast/stable
-        RUN DEBIAN_FRONTEND=noninteractive add-apt-repository -y ppa:libretro/stable
-        RUN DEBIAN_FRONTEND=noninteractive apt-get update -y
-
-        RUN DEBIAN_FRONTEND=noninteractive apt-get install -y apt-fast
-        RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y slim
-        RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y xubuntu-desktop
-        RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y xrdp
-        RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y gamemode
-        RUN DEBIAN_FRONTEND=noninteractive apt-fast install -y retroarch
-        RUN DEBIAN_FRONTEND=noninteractive apt-fast full-upgrade -y
-
-        # https://medium.com/cloud-for-all/running-ubuntu-os-with-gui-in-a-docker-container-rdp-dbecb0880893
-        RUN adduser xrdp ssl-cert
-        RUN service xrdp restart
-
-        USER root
-        EXPOSE 3389
-
-        ADD scripts/start.sh /start.sh
-
-        ENTRYPOINT ["bash", "/start.sh"]
+      dockerfile: Dockerfile
     ports:
-      - '9300:3389'
+      - 53:53/tcp
+      - 53:53/udp
+      - 100:100/tcp
+      - 3000:3000/tcp
+    volumes:
+      - adguardhome-data:/opt/adguardhome/conf
+      - adguardhome-data:/opt/adguardhome/work
 volumes:
-  volume: {}
+  adguardhome-data:
+    driver: local
