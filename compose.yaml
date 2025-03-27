@@ -3,7 +3,7 @@ name: adguardhome
 services:
   adguardhome:
     container_name: adguardhome
-    restart: on-failure:5
+    restart: on-failure:3
     build:
       context: .
       dockerfile: Dockerfile
@@ -13,8 +13,6 @@ services:
       - 100:100/tcp
       - 3000:3000/tcp
     volumes:
-      - adguardhome-data:/opt/adguardhome/conf
-      - adguardhome-data:/opt/adguardhome/work
+      - adguardhome-data:/opt/adguardhome
 volumes:
-  adguardhome-data:
-    driver: local
+  adguardhome-data: {}

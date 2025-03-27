@@ -26,3 +26,8 @@ git clone https://github.com/leostacowski/retrobuntu.git
 
 # Start docker
 docker compose up -d
+
+# Create crontab
+sudo crontab -e
+# Add this line at the end of the file
+@reboot docker compose -f /home/leostacowski/adguardhome/compose.yaml up -d --build --remove-orphans --pull missing
