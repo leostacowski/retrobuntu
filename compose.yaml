@@ -13,6 +13,8 @@ services:
       - 100:100/tcp
       - 3000:3000/tcp
     volumes:
-      - adguardhome-data:/opt/adguardhome
+      - adguardhome-data:/opt/adguardhome/conf
+      - adguardhome-data:/opt/adguardhome/work
 volumes:
-  adguardhome-data: {}
+  adguardhome-data:
+    driver: local
