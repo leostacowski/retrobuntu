@@ -20,7 +20,9 @@ Repository containing the files to setup a docker container with [adguard/adguar
 - I'm not a Linux or Docker expert, so I'm open to all types of comments and suggestions.
 - This setup is open to suggestions and improvements. Feel free to open an issue or a pull request.
 - [AdGuardHome.yaml](https://github.com/leostacowski/retrobuntu/blob/main/AdGuardHome.yaml) contains all the settings that will be copied into the Docker image, currently the user and password included in the file are for my personal setup. Also feel free to change anything else you want.
-- [compose.yaml](https://github.com/leostacowski/retrobuntu/blob/main/compose.yaml) and [dockerfile](https://github.com/leostacowski/retrobuntu/blob/main/dockerfile) are the files that will be used to build the Docker Container. Feel free to change anything to your setup needs.
+- In case you want to use the default AdGuard Home config, please comment the line `COPY AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml` in the [dockerfile](https://github.com/leostacowski/retrobuntu/blob/main/dockerfile).
+- [compose.yaml](https://github.com/leostacowski/retrobuntu/blob/main/compose.yaml) and [dockerfile](https://github.com/leostacowski/retrobuntu/blob/main/dockerfile) are the files that will be used to build the Docker Container. Feel free to adjust anything to your setup needs.
+
 - At the end of this setup, your Ubuntu Server VM will be able to receive requests on these URLs:
   - `<your-vm-ip-address>:53` (For UDP and TCP DNS requests);
   - `<your-vm-ip-address>:100` (For AdGuard Home UI);
