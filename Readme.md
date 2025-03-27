@@ -167,12 +167,13 @@ sudo su
 crontab -e
 ```
 
-- Add this line at the end of the file:
+- Add this line at the end of the file (Note that `<ubuntu-server-username>` should be replaced with your Ubuntu Server username):
 
 ```
-# <ubuntu-server-username> must be replaced with your Ubuntu Server username.
 @reboot docker compose -f /home/<ubuntu-server-username>/adguardhome/compose.yaml up -d --build --remove-orphans --pull missing
 ```
+
+- Save the changes.
 
 ### 6. 🚀 Start your DNS server
 
@@ -185,6 +186,6 @@ sudo su
 - Start your docker container.
 
 ```
-# <ubuntu-server-username> must be replaced with your Ubuntu Server username.
+# <ubuntu-server-username> should be replaced with your Ubuntu Server username.
 docker compose -f /home/<ubuntu-server-username>/adguardhome/compose.yaml up -d --build --remove-orphans --pull missing
 ```
