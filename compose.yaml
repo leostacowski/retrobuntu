@@ -1,20 +1,43 @@
-name: adguardhome
+name: retrobuntu
 
 services:
   adguardhome:
     container_name: adguardhome
-    restart: on-failure:3
+    privileged: true
+    cpu_count: 2
+    platform: linux/amd64
+    pull_policy: missing
+    healthcheck:
+      test: 'nslookup -timeout=5 google.com 127.0.0.1'
+      interval: 15m
+      timeout: 30s
+      retries: 5
+      start_period: 5s
+      start_interval: 0s
     build:
       context: .
-      dockerfile: Dockerfile
+      no_cache: true
+      dockerfile_inline: |
+        FROM adguard/adguardhome:latest
+        RUN mkdir -p /opt/adguardhome/conf
+        COPY AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml
+    deploy:
+      resources:
+        reservations:
+          memory: 100M
+      restart_policy:
+        condition: on-failure
+        max_attempts: 10
+        delay: 5s
+        window: 30s
     ports:
       - 53:53/tcp
       - 53:53/udp
       - 100:100/tcp
       - 3000:3000/tcp
     volumes:
-      - adguardhome-data:/opt/adguardhome/conf
-      - adguardhome-data:/opt/adguardhome/work
+      - container_volume:/opt/adguardhome/conf/data
+      - container_volume:/opt/adguardhome/work/data
 volumes:
-  adguardhome-data:
+  container_volume:
     driver: local
