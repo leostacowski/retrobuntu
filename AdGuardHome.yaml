@@ -23,18 +23,23 @@ dns:
   ratelimit_whitelist: []
   refuse_any: true
   upstream_dns:
-    - tls://dns.google
-    - tls://one.one.one.one
-    - tls://dns.opendns.com
-    - tls://dns.quad9.net
-    - tls://anycast.dns.nextdns.io
+    - https://dns.adguard-dns.com/dns-query
+    - https://dns.google/dns-query
+    - https://dns.cloudflare.com/dns-query
+    - https://doh.opendns.com/dns-query
+    - https://dns.quad9.net/dns-query
+    - https://0ms.dev/dns-query
+    - https://freedns.controld.com/p0
+    - https://dns.pub/dns-query
   upstream_dns_file: ''
   bootstrap_dns:
+    - 192.168.1.1
+  fallback_dns:
     - 1.1.1.1
     - 8.8.8.8
-  fallback_dns:
-    - 192.168.1.1
-  upstream_mode: parallel
+    - 9.9.9.9
+    - 208.67.222.222
+  upstream_mode: load_balance
   fastest_timeout: 1s
   allowed_clients: []
   disallowed_clients: []
@@ -156,7 +161,7 @@ filtering:
   safebrowsing_cache_size: 1048576
   safesearch_cache_size: 1048576
   parental_cache_size: 1048576
-  cache_time: 30
+  cache_time: 60
   filters_update_interval: 24
   blocked_response_ttl: 10
   filtering_enabled: true
