@@ -6,7 +6,6 @@ Repository containing the files to setup a docker container with [adguard/adguar
 
 - [Retrobuntu](#retrobuntu)
   - [📄 Table of Contents](#-table-of-contents)
-  - [💭 Considerations](#-considerations)
   - [🔨 Instructions](#-instructions)
     - [1. 🖥️ Setup Ubuntu Server](#1-️-setup-ubuntu-server)
     - [2. 🐋 Setup Docker](#2--setup-docker)
@@ -15,20 +14,15 @@ Repository containing the files to setup a docker container with [adguard/adguar
     - [5. ⏰ Schedule _docker compose up_ with _crontab_](#5--schedule-docker-compose-up-with-crontab)
     - [6. 🚀 Start your DNS server](#6--start-your-dns-server)
 
-## 💭 Considerations
+## 🔨 Instructions
 
-- I'm not a Linux or Docker expert, so I'm open to all types of comments and suggestions.
-- This setup is open to suggestions and improvements. Feel free to open an issue or a pull request.
-- [AdGuardHome.yaml](https://github.com/leostacowski/retrobuntu/blob/main/AdGuardHome.yaml) contains all the settings that will be copied into the Docker image, currently the user and password included in the file are for my personal setup. Also feel free to change anything else you want.
-- In case you want to use the default AdGuard Home config, please comment the line `COPY AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml` in the [dockerfile](https://github.com/leostacowski/retrobuntu/blob/main/dockerfile).
-- [compose.yaml](https://github.com/leostacowski/retrobuntu/blob/main/compose.yaml) and [dockerfile](https://github.com/leostacowski/retrobuntu/blob/main/dockerfile) are the files that will be used to build the Docker Container. Feel free to adjust anything to your setup needs.
+- This setup is open to suggestions and improvements. Feel free to open an [issue](https://github.com/leostacowski/retrobuntu/issues) or a [pull request](https://github.com/leostacowski/retrobuntu/pulls).
+- [AdGuardHome.yaml](https://github.com/leostacowski/retrobuntu/blob/main/AdGuardHome.yaml) contains all the settings that will be copied into the Docker image, currently settings included in the file are for my personal setup. In case you want to use the default AdGuard Home config, please comment the line `COPY AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml` in the [compose.yaml](https://github.com/leostacowski/retrobuntu/blob/main/compose.yaml) file.
 
 - At the end of this setup, your Ubuntu Server VM will be able to receive requests on these URLs:
   - `<your-vm-ip-address>:53` (For UDP and TCP DNS requests);
   - `<your-vm-ip-address>:100` (For AdGuard Home UI);
   - `<your-vm-ip-address>:3000` (For the initial setup page).
-
-## 🔨 Instructions
 
 My motivation for documenting the setup is to hopefully help anyone that, like me, already searched the internet for these keywords and is still stuck in this process:
 
@@ -38,9 +32,9 @@ My motivation for documenting the setup is to hopefully help anyone that, like m
 - "_How to run Docker Compose on reboot_";
 - "_How to clone a Git repository on Ubuntu Server_".
 
-Hope this helps!
+Below are the steps to setup Ubuntu Server and the AdGuard Home DNS server.
 
-Below are the steps to setup the Ubuntu Server and AdGuard Home DNS server.
+> Hope this helps! 🙏
 
 ### 1. 🖥️ Setup Ubuntu Server
 
@@ -141,10 +135,10 @@ cd adguardhome
 git init
 ```
 
-- Clone this repository.
+- Pull the repository.
 
 ```
-git clone https://github.com/leostacowski/retrobuntu.git
+git pull https://github.com/leostacowski/retrobuntu.git main
 ```
 
 ### 5. ⏰ Schedule _docker compose up_ with _crontab_
@@ -161,10 +155,10 @@ sudo su
 crontab -e
 ```
 
-- Add this line at the end of the file (Note that `<ubuntu-server-username>` should be replaced with your Ubuntu Server username):
+- Add this line at the end of the file (`<ubuntu-server-username>` must be replaced with your Ubuntu Server user name):
 
 ```
-@reboot docker compose -f /home/<ubuntu-server-username>/adguardhome/compose.yaml up -d --build --remove-orphans --pull missing
+@reboot docker compose -f /home/<ubuntu-server-username>/adguardhome/compose.yaml up -d --build --remove-orphans --force-recreate
 ```
 
 - Save the changes.
@@ -177,9 +171,8 @@ crontab -e
 sudo su
 ```
 
-- Start your docker container.
+- Start your docker container (`<ubuntu-server-username>` must be replaced with your Ubuntu Server user name).
 
 ```
-# <ubuntu-server-username> should be replaced with your Ubuntu Server username.
 docker compose -f /home/<ubuntu-server-username>/adguardhome/compose.yaml up -d --build --remove-orphans --force-recreate
 ```

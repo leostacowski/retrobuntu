@@ -19,7 +19,8 @@ services:
       no_cache: true
       dockerfile_inline: |
         FROM adguard/adguardhome:latest
-        RUN mkdir -p /opt/adguardhome/conf
+        RUN mkdir -p /opt/adguardhome/conf/data
+        RUN mkdir -p /opt/adguardhome/work/data
         COPY AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml
     deploy:
       resources:
