@@ -181,5 +181,5 @@ sudo su
 
 ```
 # <ubuntu-server-username> should be replaced with your Ubuntu Server username.
-docker compose -f /home/<ubuntu-server-username>/adguardhome/compose.yaml up -d --build --remove-orphans --pull missing
+docker compose -f /home/<ubuntu-server-username>/adguardhome/compose.yaml up -d --build --remove-orphans --force-recreate
 ```
