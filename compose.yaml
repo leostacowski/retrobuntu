@@ -4,7 +4,6 @@ services:
   adguardhome:
     container_name: adguardhome
     privileged: true
-    cpu_count: 2
     platform: linux/amd64
     pull_policy: missing
     healthcheck:
@@ -23,9 +22,6 @@ services:
         RUN mkdir -p /opt/adguardhome/work/data
         COPY AdGuardHome.yaml /opt/adguardhome/conf/AdGuardHome.yaml
     deploy:
-      resources:
-        reservations:
-          memory: 100M
       restart_policy:
         condition: on-failure
         max_attempts: 10
